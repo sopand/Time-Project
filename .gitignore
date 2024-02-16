@@ -18,6 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 **/application.properties
+**/docker-compose.yml
 
 
 
