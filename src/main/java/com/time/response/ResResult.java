@@ -1,11 +1,13 @@
 package com.time.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class ResResult {
 	
 	@Schema(description = "해당 API 요청 성공여부 true : 성공 , false : 실패")
