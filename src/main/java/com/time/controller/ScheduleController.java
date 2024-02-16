@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleController {
 	
 	
-	
+	public  ResponseEntity<ResResult> scheduleUpload(ReqScheduleUpload reqData){
+		
+		return null;
+	}
 
 }
