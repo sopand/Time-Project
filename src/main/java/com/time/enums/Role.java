@@ -14,5 +14,12 @@ public enum Role {
 	private String type;
 	private String name;
 	
-	
+	 public static Role fromString(String value) {
+	        for (Role role : Role.values()) {
+	            if (role.type.equals(value)) {
+	                return role;
+	            }
+	        }
+	        throw new IllegalArgumentException("No such role with type: " + value);
+	    }
 }

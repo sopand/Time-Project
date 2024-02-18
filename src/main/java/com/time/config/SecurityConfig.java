@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.time.jwt.JWTFilter;
 import com.time.jwt.JWTUtil;
 import com.time.jwt.LoginFilter;
 
@@ -48,7 +49,9 @@ public class SecurityConfig {
 				.headers(
 						(headerConfig) -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
 				// 경로별 인가 작업
-				.authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/**").permitAll()
+				.authorizeHttpRequests(authorizeRequests -> 
+				authorizeRequests.requestMatchers("/login","/","/api/member/signup").permitAll()
+				.requestMatchers("/admin").hasRole("ADMIN")
 						.anyRequest().authenticated());
 		// http basic 인증 방식 disable
 		http.httpBasic(auth -> auth.disable());
@@ -56,9 +59,12 @@ public class SecurityConfig {
 		http.formLogin((formLogin) -> formLogin.disable());
 		
 		
-		// 기본으로 설정되어있는 filter를 대체하기 위한것 UsernamePasswordAuthenticationFilter를  내가 만든 LoginFilter로 대체할것
-		http.addFilterAt(new LoginFilter(getAuthManager(authenticationConfiguration),jwtUtil),UsernamePasswordAuthenticationFilter.class);
+		LoginFilter loginFilter = new LoginFilter(getAuthManager(authenticationConfiguration),jwtUtil);
+        loginFilter.setFilterProcessesUrl("/api/member/login");
 		
+		// 기본으로 설정되어있는 filter를 대체하기 위한것 UsernamePasswordAuthenticationFilter를  내가 만든 LoginFilter로 대체할것
+		http.addFilterAt(loginFilter,UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 		// 세션 설정
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		// logout disable
