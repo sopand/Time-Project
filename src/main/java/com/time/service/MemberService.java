@@ -9,38 +9,31 @@ import com.time.exception.ErrorCode;
 import com.time.repository.MemberRepository;
 import com.time.request.member.ReqSignUp;
 import com.time.response.ResResult;
+import com.time.util.CommonUtils;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-	
+
 	private final PasswordEncoder passwordEncoder;
-	
+
 	private final MemberRepository memberRepository;
-	
-	
+
 	public ResResult signUp(ReqSignUp reqData) {
-		Member member=Member.builder()
-				.email(reqData.getEmail())
-				.password(passwordEncoder.encode(reqData.getPassword()))
-				.name(reqData.getName())
-				.build();
-		memberRepository.save(member);
-		
-		if(member.getMemberSid()==null) {
-			throw new CustomException(ErrorCode.DATA_INSERT_FAILED);
-		}
-		
-		return ResResult.builder()
-				.success(true)
-				.message("회원가입이 완료되었습니다.")
-				.statusCode(200)
-				.build();
-		
+
+		// 이미 존재하는 닉네임일 경우 에러발생
+		if (memberRepository.existsByEmail(reqData.getEmail()))
+			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+
+		Member saveMember = Member.builder().email(reqData.getEmail())
+				.password(passwordEncoder.encode(reqData.getPassword())).name(reqData.getName()).build();
+		memberRepository.save(saveMember);
+
+		// SAVE 성공여부 체크를 위한 static 메서드
+		return CommonUtils.isSaveSuccessful(saveMember.getMemberSid(), "회원가입이 완료 되었습니다");
+
 	}
-	
-	
 
 }

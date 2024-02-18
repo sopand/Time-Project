@@ -1,6 +1,7 @@
 package com.time.request.schedule;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,9 +39,9 @@ public class ReqScheduleUpload {
 	
 	@Schema(description = "해당 일정을 실행한 시간")
 	@Hidden
-	private Timestamp start_date;
+	private LocalDateTime start_date;
 	
 	@Schema(description = "해당 일정이 종료된 시간")
 	@Hidden
-	private Timestamp end_date;
+	private LocalDateTime end_date;
 }

@@ -3,6 +3,7 @@ package com.time.entity;
 
 
 import com.time.enums.FlagYN;
+import com.time.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,10 @@ public class Member extends BaseTimeEntity{
 	// 사용자 성명 OR 별명
 	@NotNull
 	private String name;
+	
+	@Column(name="role")
+	@Enumerated(EnumType.STRING)
+	private Role role;
 	
 	
 	// 아이디 삭제 여부
