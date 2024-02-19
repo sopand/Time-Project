@@ -6,6 +6,7 @@ import com.time.response.ResResult;
 
 public class CommonUtils {
 	
+	
 	public static ResResult isSaveSuccessful(Long sid,String message) {
 		
 		if(sid==null) 
@@ -16,8 +17,7 @@ public class CommonUtils {
 				.message(message)
 				.statusCode(200)
 				.build();
-		
-		
 	}
-
+	
+	
 }
