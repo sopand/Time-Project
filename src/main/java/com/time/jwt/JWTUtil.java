@@ -31,9 +31,10 @@ public class JWTUtil {
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role",String.class);
 	}
 	
-	public Boolean isExpired(String token) {
-		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-	}
+
+    public Boolean isExpired(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+    }
 	
 	
 	// JWT토큰을 생성하는 메서드

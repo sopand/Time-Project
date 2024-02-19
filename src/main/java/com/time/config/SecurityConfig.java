@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,7 +36,14 @@ public class SecurityConfig {
 		
 		return configuration.getAuthenticationManager();
 	}
-	
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+	    return web -> web.ignoring().requestMatchers(
+	                                                 "/favicon.ico",
+	                                                 "/swagger-ui/**",
+	                                                 "/swagger-resources/**",
+	                                                 "/v3/api-docs/**");
+	}
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -46,12 +54,12 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		// CSRF disable
 		http.csrf((csrfConfig) -> csrfConfig.disable())
-				.headers(
-						(headerConfig) -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
+//				.headers(
+//						(headerConfig) -> headerConfig.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))
 				// 경로별 인가 작업
-				.authorizeHttpRequests(authorizeRequests -> 
-				authorizeRequests.requestMatchers("/login","/","/api/member/signup").permitAll()
-				.requestMatchers("/admin").hasRole("ADMIN")
+				.authorizeHttpRequests(auth -> auth 
+						.requestMatchers("/api/member/login","/","/api/member/signup").permitAll()
+						.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 						.anyRequest().authenticated());
 		// http basic 인증 방식 disable
 		http.httpBasic(auth -> auth.disable());
@@ -59,12 +67,15 @@ public class SecurityConfig {
 		http.formLogin((formLogin) -> formLogin.disable());
 		
 		
+		
+		// LoginFilter의 
 		LoginFilter loginFilter = new LoginFilter(getAuthManager(authenticationConfiguration),jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/member/login");
 		
 		// 기본으로 설정되어있는 filter를 대체하기 위한것 UsernamePasswordAuthenticationFilter를  내가 만든 LoginFilter로 대체할것
 		http.addFilterAt(loginFilter,UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+		//JWTFilter 등록
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 		// 세션 설정
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		// logout disable

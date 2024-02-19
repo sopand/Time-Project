@@ -36,7 +36,7 @@ public class JWTFilter extends OncePerRequestFilter { // 요청에 대해 1번�
 			filterChain.doFilter(request, response);
 			return;
 		}
-		log.info("인증 진행");
+		log.info("인증 진행중");
 		
 		//Bearer 부분 제거 후 순수 토큰만 획득
 		String token = authorization.split(" ")[1];
@@ -56,18 +56,20 @@ public class JWTFilter extends OncePerRequestFilter { // 요청에 대해 1번�
 		Member memberData = Member.builder()
 				.email(username)
 				.role(Role.fromString(role))
+				.password("adsadasd")
 				.build();
 		
 		//UserDetail에 회원정보 객체담기
 		CustomUserDetails customUserDetails = new CustomUserDetails(memberData);
 		
-		//스프링 시큐리티 인증토큰 생성
-		Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,customUserDetails.getAuthorities());
-		
-		//세션에 사용자를 등록
-		SecurityContextHolder.getContext().setAuthentication(authToken);
-		filterChain.doFilter(request, response);
-		
+		//스프링 시큐리티 인증 토큰 생성
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        
+        //세션에 사용자 등록
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        
+        
+        filterChain.doFilter(request, response);
 		
 	}
 }
