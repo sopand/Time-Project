@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 
@@ -14,19 +14,33 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 public class SwaggerConfig {
 
-	@Bean
-	  public OpenAPI openAPI() {
-	    return new OpenAPI()
-	        .info(new Info()
-	            .title("Time-Web API")
-	            .description("하루의 일정을 등록할 수 있어요")
-	            .version("1.0.0"))
-	        .components(new Components()
-	            .addSecuritySchemes("bearer-key",
-	                new SecurityScheme()
-	                .type(Type.HTTP)
-	                .scheme("bearer")
-	                .bearerFormat("JWT")));
+		
 
-	  }
+    
+    @Bean
+    public OpenAPI openAPI() {
+
+        Info info = new Info()
+                .version("v1.0.0")
+                .title("API 타이틀")
+                .description("API Description");
+
+        // SecuritySecheme명 
+        String jwtSchemeName = "jwtAuth";
+        // API 요청헤더에 인증정보 포함
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        // SecuritySchemes 등록
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName, new io.swagger.v3.oas.models.security.SecurityScheme()
+                                .name(jwtSchemeName)
+                                .type(SecurityScheme.Type.HTTP) // HTTP 방식
+                                .scheme("bearer")
+                                .bearerFormat("JWT")); // 토큰 형식을 지정하는 임의의 문자(Optional)
+
+        return new OpenAPI()
+                .info(info)
+                .addSecurityItem(securityRequirement)
+                .components(components);
+    }
+    
 }

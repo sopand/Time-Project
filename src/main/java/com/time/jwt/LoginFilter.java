@@ -78,7 +78,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String role = auth.getAuthority();
 
-		String token = jwtUtil.createJwt(username, role, 1000 * 1000 * 10L);
+		String token = jwtUtil.createJwt(username, role, 2000 * 2000 * 30L);
 
 		// HTTP인증 방식은 RFC7235정의에 따라 인증방식 : 타입 인증토큰 < 형태를 가져야함
 		// 예시 : Authorization: Bearer 인증토큰문자열
