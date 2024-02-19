@@ -1,10 +1,10 @@
 package com.time.jwt;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,11 +12,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,20 +28,38 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final AuthenticationManager authenticationManager;
-
+	private static final String CONTENT_TYPE = "application/json"; // JSON 타입의 요청일 경우
 	private final JWTUtil jwtUtil;
+
+	@Getter
+	@Setter
+	private static class ReqLoginData { // form 로그인 / json 로그인 방식에따라 데이터 받아오는 방식이 달라서 만든객체
+		private String username;
+		private String password;
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-
-		// 클라이언트 요청에서 username과 password를 추출
-		String email = obtainUsername(request);
-		String password = obtainPassword(request);
-
-		log.info("로그인 사용자 이메일 : {} 패스워드 : {}", email, password);
+		ReqLoginData loginData=null;
+		
+		
+		if(request.getContentType().equals(CONTENT_TYPE)) {  // 시큐리티는 form아니면 obtain에서 못가져온다..
+			ObjectMapper objectMapper = new ObjectMapper();
+			try (InputStream inputStream = request.getInputStream()) {
+				loginData = objectMapper.readValue(inputStream, ReqLoginData.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			loginData.setUsername(obtainUsername(request));
+			loginData.setPassword(obtainPassword(request));
+		}
+		
+		
+		log.info("로그인 사용자 이메일 : {} 패스워드 : {}", loginData.getUsername(), loginData.getPassword());
 		// 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야한다.
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginData.getUsername(), loginData.getPassword(), null);
 
 		// token에 담은 검증을 위한 AuthenticationManager로 전달
 		return authenticationManager.authenticate(authToken);
