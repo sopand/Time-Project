@@ -1,25 +1,32 @@
 package com.time.entity;
 
-import java.time.LocalDateTime;
+
+import java.sql.Time;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "tb_schedule")
 @Getter
+@ToString
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,7 +39,7 @@ public class Schedule {
 	
 	
 	// 해당 일정을 등록한 사용자 시퀀스
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_sid")
 	private Member member;
 
@@ -49,12 +56,27 @@ public class Schedule {
 	private String memo;
 	
 	// 일정의 시작시간
-	@Column(name = "startDate")
+	@Column(name = "start_date")
 	@NotNull
-	private LocalDateTime startDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Timestamp startDate;
 
 	// 일정의 종료시간
-	@Column(name = "endDate")
-	@NotNull
-	private LocalDateTime endDate;
+	@Column(name = "end_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Timestamp endDate;
+	
+	
+	public void secondDepthIn(String secondDepth) {
+		this.secondDepth=secondDepth;
+	}
+	
+	public void memoIn(String memo) {
+		this.memo=memo;
+	}
+	
+	
+	public void endDateUpdate(Timestamp endDate) {
+		this.endDate=endDate;
+	}
 }

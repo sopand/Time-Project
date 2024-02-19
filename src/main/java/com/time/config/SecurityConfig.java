@@ -59,6 +59,7 @@ public class SecurityConfig {
 				// 경로별 인가 작업
 				.authorizeHttpRequests(auth -> auth 
 						.requestMatchers("/api/member/login","/","/api/member/signup").permitAll()
+						.requestMatchers("/api/schedule/auth/**").hasAnyAuthority("ADMIN","USER")
 						.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 						.anyRequest().authenticated());
 		// http basic 인증 방식 disable
