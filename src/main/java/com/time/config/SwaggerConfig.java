@@ -1,29 +1,32 @@
 package com.time.config;
 
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 
-
-@OpenAPIDefinition(
-        info = @Info(title = "Time-Web",
-                description = "Time-Web API",
-                version = "v0.0.1"))
 @RequiredArgsConstructor
 @Configuration
 public class SwaggerConfig {
 
-    @Bean
-    public GroupedOpenApi chatOpenApi() {
-        String[] paths = {"/api/**"};
+	@Bean
+	  public OpenAPI openAPI() {
+	    return new OpenAPI()
+	        .info(new Info()
+	            .title("Time-Web API")
+	            .description("하루의 일정을 등록할 수 있어요")
+	            .version("1.0.0"))
+	        .components(new Components()
+	            .addSecuritySchemes("bearer-key",
+	                new io.swagger.v3.oas.models.security.SecurityScheme()
+	                .type(Type.HTTP)
+	                .scheme("bearer")
+	                .bearerFormat("JWT")));
 
-        return GroupedOpenApi.builder()
-                .group("Time-Web v0.0.1")
-                .pathsToMatch(paths)
-                .build();
-    }
+	  }
 }
