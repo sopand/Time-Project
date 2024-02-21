@@ -2,16 +2,20 @@ package com.time.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.time.request.schedule.ReqScheduleUpload;
 import com.time.response.ResResult;
+import com.time.response.schedule.ResCalendar;
 import com.time.service.ScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +33,12 @@ public class ScheduleController {
 	public  ResponseEntity<ResResult> scheduleUpload(@ModelAttribute ReqScheduleUpload reqData) throws Exception{
 		schduleSRV.scheduleInsert(reqData);
 		return null;
+	}
+	
+	@GetMapping("/auth/calendar")
+	public ResponseEntity<ResCalendar> calendarChk(@Parameter(name = "date", description = "검색할 연도-달",example = "2023-01")@RequestParam(name="date") String date){
+		ResCalendar result=schduleSRV.calendarChk(date);
+		return ResponseEntity.ok(result);
 	}
 
 }

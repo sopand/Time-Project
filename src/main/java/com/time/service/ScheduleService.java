@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.time.dslrepository.ScheduleCustomRepositoryImpl;
 import com.time.entity.Member;
 import com.time.entity.Schedule;
 import com.time.exception.CustomException;
@@ -16,6 +17,7 @@ import com.time.exception.ErrorCode;
 import com.time.repository.MemberRepository;
 import com.time.repository.ScheduleRepository;
 import com.time.request.schedule.ReqScheduleUpload;
+import com.time.response.schedule.ResCalendar;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ScheduleService {
 
 	private final ScheduleRepository scheduleRepository;
-
+	
+	private final ScheduleCustomRepositoryImpl scheduleCustomRepositoryImpl;
 	private final MemberRepository memberRepository;
 
 	/* 오늘 하루 스케줄 등록하기 */
@@ -79,6 +82,15 @@ public class ScheduleService {
 	public Member loginInformation() {
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+	}
+	
+	
+	public ResCalendar calendarChk(String date) {
+		Member member =loginInformation();
+		List<Integer> calendarList=scheduleCustomRepositoryImpl.findCalendarSchedule(member.getMemberSid(),date);
+		return ResCalendar.builder()
+				.calendarList(calendarList)
+				.build();
 	}
 
 }
