@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.time.request.schedule.ReqScheduleUpload;
 import com.time.response.ResResult;
-import com.time.response.schedule.ResCalendar;
+import com.time.response.schedule.ResCalendarCheckList;
 import com.time.service.ScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,14 +31,22 @@ public class ScheduleController {
 	@ApiResponse(responseCode = "200",description = "일정 등록 성공")
 	@ApiResponse(responseCode = "400",description = "일정 등록 실패")
 	public  ResponseEntity<ResResult> scheduleUpload(@ModelAttribute ReqScheduleUpload reqData) throws Exception{
-		schduleSRV.scheduleInsert(reqData);
-		return null;
+		ResResult result=schduleSRV.scheduleInsert(reqData);
+		return ResponseEntity.status(result.getStatusCode()).body(result);
 	}
 	
-	@GetMapping("/auth/calendar")
-	public ResponseEntity<ResCalendar> calendarChk(@Parameter(name = "date", description = "검색할 연도-달",example = "2023-01")@RequestParam(name="date") String date){
-		ResCalendar result=schduleSRV.calendarChk(date);
+	@GetMapping("/auth/day/upload/check")
+	public ResponseEntity<ResCalendarCheckList> dayUploadCheck(@Parameter(name = "date", description = "검색할 연도-달",example = "2023-01")@RequestParam(name="date") String date){
+		ResCalendarCheckList result=schduleSRV.dayUploadCheck(date);
 		return ResponseEntity.ok(result);
 	}
+	
+	@GetMapping("/auth/day/list")
+	public ResponseEntity<ResResult> findDaySchedule(@Parameter(name = "date", description = "검색할 연도-달-날짜",example = "2023-06-10")@RequestParam(name="date") String date) throws Exception{
+		schduleSRV.calendarByDay(date);
+		
+		return ResponseEntity.ok(null);
+	}
+	
 
 }

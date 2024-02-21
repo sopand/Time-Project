@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,7 +17,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	@Query("SELECT sc FROM Schedule sc JOIN FETCH sc.member m WHERE m.memberSid= :memberSid AND sc.startDate <= :date  ORDER BY sc.startDate desc LIMIT 1")
 	Schedule selectByBeforeTime(@Param("memberSid") Long memberSid, @Param("date") Timestamp date);
 	
-	@Modifying(flushAutomatically = true)
-	@Query("UPDATE Schedule s SET s.endDate = :date WHERE s.scheduleSid = :scheduleSid")
-	int updateEndDate( @Param("date") Timestamp date,@Param("scheduleSid") Long scheduleSid);
+	
+	List<Schedule> findByStartDateBetween(Timestamp startDate,Timestamp endDate);
 }

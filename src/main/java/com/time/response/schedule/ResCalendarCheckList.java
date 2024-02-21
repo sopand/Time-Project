@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class ResCalendar {
+public class ResCalendarCheckList {
 	
 	@Schema(description = "일정이 등록되어있는 날짜")
 	private List<Integer> calendarList; 
