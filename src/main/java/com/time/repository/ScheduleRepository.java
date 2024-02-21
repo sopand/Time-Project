@@ -17,6 +17,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 	@Query("SELECT sc FROM Schedule sc JOIN FETCH sc.member m WHERE m.memberSid= :memberSid AND sc.startDate <= :date  ORDER BY sc.startDate desc LIMIT 1")
 	Schedule selectByBeforeTime(@Param("memberSid") Long memberSid, @Param("date") Timestamp date);
 	
-	
 	List<Schedule> findByStartDateBetween(Timestamp startDate,Timestamp endDate);
+	
 }

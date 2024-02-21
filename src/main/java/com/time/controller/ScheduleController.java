@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.time.request.schedule.ReqScheduleUpload;
 import com.time.response.ResResult;
 import com.time.response.schedule.ResCalendarCheckList;
+import com.time.response.schedule.ResDaySchedule;
 import com.time.service.ScheduleService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,18 +35,19 @@ public class ScheduleController {
 		ResResult result=schduleSRV.scheduleInsert(reqData);
 		return ResponseEntity.status(result.getStatusCode()).body(result);
 	}
-	
+	@Operation(summary = "달력 - 해당 달의 일정 등록된날짜 체크")
+	@ApiResponse(responseCode = "200",description = "일정 불러오기 성공")
 	@GetMapping("/auth/day/upload/check")
 	public ResponseEntity<ResCalendarCheckList> dayUploadCheck(@Parameter(name = "date", description = "검색할 연도-달",example = "2023-01")@RequestParam(name="date") String date){
 		ResCalendarCheckList result=schduleSRV.dayUploadCheck(date);
 		return ResponseEntity.ok(result);
 	}
-	
+	@Operation(summary = "해당 날짜의 일정보기")
+	@ApiResponse(responseCode = "200",description = "일정 불러오기 성공")
 	@GetMapping("/auth/day/list")
-	public ResponseEntity<ResResult> findDaySchedule(@Parameter(name = "date", description = "검색할 연도-달-날짜",example = "2023-06-10")@RequestParam(name="date") String date) throws Exception{
-		schduleSRV.calendarByDay(date);
-		
-		return ResponseEntity.ok(null);
+	public ResponseEntity<ResDaySchedule> findDaySchedule(@Parameter(name = "date", description = "검색할 연도-달-날짜",example = "2023-06-10")@RequestParam(name="date") String date) throws Exception{
+		ResDaySchedule result=schduleSRV.calendarByDay(date);
+		return ResponseEntity.ok(result);
 	}
 	
 

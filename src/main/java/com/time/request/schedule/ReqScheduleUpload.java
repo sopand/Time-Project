@@ -1,5 +1,7 @@
 package com.time.request.schedule;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +13,7 @@ public class ReqScheduleUpload {
 	
 	
 	@Schema(description = "업로드할 텍스트 파일")
-	private MultipartFile file;
+	private List<MultipartFile> file;
 	
 
 	
