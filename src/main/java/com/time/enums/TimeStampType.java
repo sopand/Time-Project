@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TimeStampType {
 	
-	START_DAY("START"),
+	CURRENT("CURRENT"),
 	END_DAY("END"),
 	NEXT_DAY_END("NEXT_DAY_END");
 	private String type;

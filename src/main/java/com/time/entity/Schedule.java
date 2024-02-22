@@ -83,7 +83,7 @@ public class Schedule {
 	
 	public void nextDateChkUpdate(Schedule schedule) {
 		if(schedule!=null) {
-			this.endDate=schedule.getEndDate();
+			this.endDate=schedule.getStartDate();
 		}
 	}
 }
