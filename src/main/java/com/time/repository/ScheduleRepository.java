@@ -11,7 +11,7 @@ import com.time.entity.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-	@Query("SELECT sc FROM Schedule sc JOIN FETCH sc.member m WHERE m.memberSid= :memberSid AND sc.startDate >= :date AND sc.endDate <= :date LIMIT 1")
+	@Query("SELECT sc FROM Schedule sc JOIN FETCH sc.member m WHERE m.memberSid= :memberSid AND sc.startDate >= :date AND sc.endDate <= :date ORDER BY sc.startDate asc LIMIT 1")
 	Schedule selectTimeBetween(@Param("memberSid") Long memberSid, @Param("date") Timestamp date);
 
 	@Query("SELECT sc FROM Schedule sc JOIN FETCH sc.member m WHERE m.memberSid= :memberSid AND sc.startDate <= :date  ORDER BY sc.startDate desc LIMIT 1")

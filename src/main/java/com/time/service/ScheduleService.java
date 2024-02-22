@@ -1,12 +1,8 @@
 package com.time.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,11 +54,8 @@ public class ScheduleService {
 		for (int i = 0; i < reqData.getFile().size(); i++) {
 			try (BufferedReader buffer = new BufferedReader(new InputStreamReader(reqData.getFile().get(i).getInputStream()))) {
 				String bufferTextLine; // buffer의 readLine ( 한줄 데이터 ) 받아놓을 문자열
-				StringBuffer daySetBuffer = new StringBuffer(); // timestamp 날짜형식 맞추기위한 string buffer
-				daySetBuffer.append(getDateByFileName(reqData.getFile().get(i).getOriginalFilename()));  // 메모장이름 20230714를 .txt파일명을 제외하고 가져옴
-				daySetBuffer.insert(4, "-");
-				daySetBuffer.insert(7, "-");
-				String dayStr=daySetBuffer.toString();
+				
+				String dayStr=getDateByFileName(reqData.getFile().get(i).getOriginalFilename());
 				
 				while ((bufferTextLine = buffer.readLine()) != null) { // 한줄이 null이 아닐때까지 반복
 
@@ -109,9 +102,14 @@ public class ScheduleService {
 
 
 	
-	private String getDateByFileName(String fileName) {
+	private String getDateByFileName(String fileName) { // 메모장 파일의 이름에서 날짜를 가져오는 메소드
 	    int commaIndex = fileName.indexOf(".");
-	    return fileName.substring(0, commaIndex);
+	    String textFileDate=fileName.substring(0, commaIndex);
+	    StringBuffer dateSetBuffer = new StringBuffer(); // timestamp 날짜형식 맞추기위한 string buffer
+	    dateSetBuffer.append(textFileDate);  // 메모장이름 20230714를 .txt파일명을 제외하고 가져옴
+	    dateSetBuffer.insert(4, "-");
+	    dateSetBuffer.insert(7, "-");
+	    return dateSetBuffer.toString();
 	}
 	
 	/**
@@ -133,7 +131,7 @@ public class ScheduleService {
 	 * @throws Exception
 	 */
 	@Transactional(readOnly = true)
-	public ResDaySchedule calendarByDay(String date) throws Exception {
+	public ResDaySchedule findByDaySchedule(String date) throws Exception {
 		Member member =loginInformation();
 		Timestamp start = CommonUtils.stringToTimeStamp(date, TimeStampType.START_DAY);
 		Timestamp end = CommonUtils.stringToTimeStamp(date, TimeStampType.END_DAY);
@@ -149,6 +147,16 @@ public class ScheduleService {
 		return result;
 	}
 	
+	
+	@Transactional
+	public ResResult deleteSchedule(Long scheduleSid) {
+		Schedule schedule=scheduleRepository.findById(scheduleSid).orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
+		scheduleRepository.delete(schedule);
+		
+		return CommonUtils.isPostSuccessful(scheduleSid,"일정의 삭제가 완료되었습니다.");
+			
+		
+	}
 	
 	
 	

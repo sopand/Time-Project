@@ -18,6 +18,15 @@ public class CommonUtils {
 
 		return ResResult.builder().success(true).message(message).statusCode(200).build();
 	}
+	
+	public static ResResult isPostSuccessful(Long sid, String message) {
+
+		if (sid == null)
+			throw new CustomException(ErrorCode.DATA_MODIFY_FAILED);
+
+		return ResResult.builder().success(true).message(message).statusCode(200).build();
+	}
+	
 
 	public static Timestamp stringToTimeStamp(String date, TimeStampType type) throws Exception {
 		LocalDate localDate = LocalDate.parse(date);
