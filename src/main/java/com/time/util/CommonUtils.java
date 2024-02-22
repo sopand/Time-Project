@@ -2,8 +2,7 @@ package com.time.util;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 import com.time.enums.TimeStampType;
 import com.time.exception.CustomException;
@@ -22,11 +21,16 @@ public class CommonUtils {
 
 	public static Timestamp stringToTimeStamp(String date, TimeStampType type) throws Exception {
 		LocalDate localDate = LocalDate.parse(date);
+		System.out.println("췍췍"+localDate);
 		switch (type.getType()) {
-			case "END" -> { // 선택날짜의 다음날짜로 변환
-				LocalDate nextDay = localDate.plusDays(1); // 다음 날짜 계산
-				return  Timestamp.valueOf(nextDay.atStartOfDay());
+			case "END" -> { // 선택날짜의 23:59:59로 변환
+				  LocalDateTime endOfDay = localDate.atStartOfDay().plusDays(1).minusSeconds(1);
+				return  Timestamp.valueOf(endOfDay);
 			
+			}
+			case "NEXT_DAY_END" -> { // 다음날자의 23:59:59로 변환
+				LocalDateTime nextDayEnd = localDate.plusDays(2).atStartOfDay().minusSeconds(1);
+				return Timestamp.valueOf(nextDayEnd);
 			}
 			default -> {  // 선택날짜를 Timestamp로 변환
 				return Timestamp.valueOf(localDate.atStartOfDay());

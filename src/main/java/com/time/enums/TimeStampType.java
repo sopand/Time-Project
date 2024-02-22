@@ -8,8 +8,8 @@ import lombok.Getter;
 public enum TimeStampType {
 	
 	START_DAY("START"),
-	END_DAY("END");
-	
+	END_DAY("END"),
+	NEXT_DAY_END("NEXT_DAY_END");
 	private String type;
 
 }

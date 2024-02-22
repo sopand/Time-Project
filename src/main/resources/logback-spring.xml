@@ -4,20 +4,24 @@
     <!-- Appenders -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>
             <Pattern>%d %5p [%c] %m%n</Pattern>
         </encoder>
     </appender>
-
+    
     <appender name="console-infolog" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>
             <Pattern>%d %5p %m%n</Pattern>
         </encoder>
     </appender>
 
-    <!-- Logger -->
-    <logger name="com.example.time" level="DEBUG" appender-ref="console" /> # src/main/java 디렉터리 안의 자바 패키지 경로
+     <!-- Logger -->
+    <logger name="com.study" level="DEBUG" appender-ref="console" />
     <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
     <logger name="jdbc.resultsettable" level="INFO" appender-ref="console-infolog" />
+	
+	
 
     <!-- Root Logger -->
     <root level="off">

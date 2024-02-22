@@ -77,6 +77,13 @@ public class Schedule {
 	
 	
 	public void endDateUpdate(Timestamp endDate) {
-		this.endDate=endDate;
+			this.endDate=endDate;
+		
+	}
+	
+	public void nextDateChkUpdate(Schedule schedule) {
+		if(schedule!=null) {
+			this.endDate=schedule.getEndDate();
+		}
 	}
 }
