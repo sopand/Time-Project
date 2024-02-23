@@ -1,7 +1,6 @@
 package com.time.entity;
 
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Column;

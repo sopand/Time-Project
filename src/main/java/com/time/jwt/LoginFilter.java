@@ -3,6 +3,7 @@ package com.time.jwt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,6 +53,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 				e.printStackTrace();
 			}
 		}else {
+			//클라이언트 요청에서 username, password 추출
 			loginData.setUsername(obtainUsername(request));
 			loginData.setPassword(obtainPassword(request));
 		}
@@ -77,12 +79,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		GrantedAuthority auth = iterator.next();
 
 		String role = auth.getAuthority();
+		
+		String accessToken = jwtUtil.createJwt(username, role, 1800000L);
+		String refreshToken = jwtUtil.createRefresh(); // 리프레시 토큰 생성 메소드를 호출하거나, 다른 방식으로 리프레시 토큰을 생성합니다.
 
-		String token = jwtUtil.createJwt(username, role, 2000 * 2000 * 30L);
+		TokenInfo tokenResponse=TokenInfo.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.grantType("Bearer")
+				.build();
+		// JSON 형태로 변환하여 응답에 쓰기
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    String jsonResponse = objectMapper.writeValueAsString(tokenResponse);
 
-		// HTTP인증 방식은 RFC7235정의에 따라 인증방식 : 타입 인증토큰 < 형태를 가져야함
-		// 예시 : Authorization: Bearer 인증토큰문자열
-		response.addHeader("Authorization", "Bearer " + token);
+	    // JSON 응답을 클라이언트에게 전송
+	    response.setContentType("application/json");
+	    response.setCharacterEncoding("UTF-8");
+	    response.getWriter().write(jsonResponse);
 
 		log.info("로그인 성공하였습니다");
 	}

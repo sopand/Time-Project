@@ -27,12 +27,12 @@ public class JWTUtil {
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username",String.class);
 	}
 	
-	public String getRole(String token) {
+	public String getRole(String token) { // 권한 체크
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role",String.class);
 	}
 	
 
-    public Boolean isExpired(String token) {
+    public Boolean isExpired(String token) {  // 만료 여부 체크
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 	
@@ -46,6 +46,16 @@ public class JWTUtil {
 				.issuedAt(new Date(System.currentTimeMillis()))  // 토큰의 생성시간
 				.expiration(new Date(System.currentTimeMillis()+expiredMs)) // 토큰의 만료시간
 				.signWith(secretKey)  // 암호화 키 
+				.compact();
+	}
+	
+	
+	// 리프레쉬 토근을 생성하는 메서드
+	public String createRefresh() {
+		return Jwts.builder()
+				.issuedAt(new Date(System.currentTimeMillis()))
+				.expiration(new Date(System.currentTimeMillis()+8640000L))
+				.signWith(secretKey)
 				.compact();
 	}
 	

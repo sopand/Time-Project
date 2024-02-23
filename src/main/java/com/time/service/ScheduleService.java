@@ -92,7 +92,6 @@ public class ScheduleService {
 		Schedule time_valid = scheduleRepository.selectTimeBetween(memberSid, startDate);
 
 		if (time_valid != null) { // 내가 지정한 시간대에 이미 일정이 존재하는지 체크
-			log.info("데이터 {}", time_valid);
 			throw new CustomException(ErrorCode.SCHEDULE_TIME_DUPLICATION);
 		}
 
