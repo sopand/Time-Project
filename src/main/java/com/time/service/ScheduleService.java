@@ -64,6 +64,7 @@ public class ScheduleService {
 
 					Schedule newSchedule = Schedule.builder().member(member).firstDepth(textList[1])
 							.startDate(startDate).build();
+					
 					switch (textList.length) {
 						case 3 -> {
 							newSchedule.secondDepthIn(textList[2]);
@@ -73,7 +74,8 @@ public class ScheduleService {
 							newSchedule.memoIn(textList[3]);
 						}
 					}
-					if (!buffer.ready()) {
+					
+					if (!buffer.ready()) { // 해당일의 마지막 일정일 경우 작동 ( 바로 뒷날에 데이터가 있다면 해당날짜의 첫번째 데이터의 startDate가 마지막일정의 endDate로 등록
 						Timestamp nextDayLastTime = CommonUtils.stringToTimeStamp(dayStr, TimeStampType.NEXT_DAY_END);
 						Timestamp currentLastTime = CommonUtils.stringToTimeStamp(dayStr, TimeStampType.END_DAY);
 						Schedule nextDayStartDate = scheduleRepository.findByCurrentAndNextEndSchedule(currentLastTime,

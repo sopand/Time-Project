@@ -3,7 +3,6 @@ package com.time.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.time.jwt.CustomAccessHandler;
 import com.time.jwt.CustomAuthenticationEntryPoint;
 import com.time.jwt.JWTFilter;
 import com.time.jwt.JWTUtil;
@@ -30,6 +30,7 @@ public class SecurityConfig {
 	
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    private final CustomAccessHandler customAccessHandler;
 	
 	private final JWTUtil jwtUtil;
 	
@@ -68,8 +69,10 @@ public class SecurityConfig {
 						.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 						.anyRequest().authenticated());
 		// http basic 인증 방식 disable
-		http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
-        .exceptionHandling(Customizer.withDefaults());
+		http.httpBasic(basic -> basic.disable());
+		http.exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+				.accessDeniedHandler(customAccessHandler));
+		
 		// Form 로그인 disable
 		http.formLogin((formLogin) -> formLogin.disable());
 		

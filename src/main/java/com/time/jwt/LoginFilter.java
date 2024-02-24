@@ -44,7 +44,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			throws AuthenticationException {
 		ReqLoginData loginData=null;
 		
-		
 		if(request.getContentType().equals(CONTENT_TYPE)) {  // 시큐리티는 form아니면 obtain에서 못가져온다..
 			ObjectMapper objectMapper = new ObjectMapper();
 			try (InputStream inputStream = request.getInputStream()) {
@@ -104,9 +103,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		log.error("로그인에 실패하였습니다");
-		// 로그인 실패시 401 응답코드 발생
 		response.setStatus(401);
+		response.setContentType("application/json");
+	    response.setCharacterEncoding("UTF-8");
+	    response.getWriter().write("로그인에 실패하였습니다.");
 
 	}
 
