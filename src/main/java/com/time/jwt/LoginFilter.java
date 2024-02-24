@@ -80,7 +80,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String role = auth.getAuthority();
 		
-		String accessToken = jwtUtil.createJwt(username, role, 1800000L);
+		String accessToken = jwtUtil.createJwt(username, role, 18000L);
 		String refreshToken = jwtUtil.createRefresh(); // 리프레시 토큰 생성 메소드를 호출하거나, 다른 방식으로 리프레시 토큰을 생성합니다.
 
 		TokenInfo tokenResponse=TokenInfo.builder()

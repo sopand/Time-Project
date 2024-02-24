@@ -18,15 +18,10 @@ public enum ErrorCode {
 	
 	
 	SCHEDULE_TIME_DUPLICATION(HttpStatus.CONFLICT,"기존 일정과 시간이 중복됩니다"),
-	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 일정에 대한 정보를 찾을 수 없습니다."),
+	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 일정에 대한 정보를 찾을 수 없습니다.");
 	
 	
 
-	SID_DONT_MATCH(HttpStatus.FORBIDDEN,"해당 데이터에 접근할 권한이 없습니다."),
-	JWT_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"접근 권한이 없습니다."),
-	TOKEN_ACCESS_TIME_OUT(HttpStatus.UNAUTHORIZED,"토큰 시간이 만료되었습니다 재로그인해주세요");
-	
-	
 	private final HttpStatus status;
 	private final String message;
 

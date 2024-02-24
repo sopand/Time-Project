@@ -3,6 +3,7 @@ package com.time.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.time.jwt.CustomAuthenticationEntryPoint;
 import com.time.jwt.JWTFilter;
 import com.time.jwt.JWTUtil;
 import com.time.jwt.LoginFilter;
@@ -25,6 +27,9 @@ public class SecurityConfig {
 	
 	//AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
 	private final AuthenticationConfiguration authenticationConfiguration;
+	
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 	
 	private final JWTUtil jwtUtil;
 	
@@ -63,7 +68,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 						.anyRequest().authenticated());
 		// http basic 인증 방식 disable
-		http.httpBasic(auth -> auth.disable());
+		http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
+        .exceptionHandling(Customizer.withDefaults());
 		// Form 로그인 disable
 		http.formLogin((formLogin) -> formLogin.disable());
 		
@@ -81,7 +87,7 @@ public class SecurityConfig {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		// logout disable
 		http.logout(logout -> logout.disable());
-
+		
 		return http.build();
 	}
 
