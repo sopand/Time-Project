@@ -1,14 +1,21 @@
 package com.time.util;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+
 import com.time.enums.TimeStampType;
 import com.time.exception.CustomException;
 import com.time.exception.ErrorCode;
+import com.time.jwt.JwtErrorCode;
 import com.time.response.ResResult;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 public class CommonUtils {
 
@@ -56,4 +63,25 @@ public class CommonUtils {
 		return Timestamp.valueOf(dateTime);
 	}
 
+
+	public static void responseAuthenticationError(HttpServletResponse response, JwtErrorCode jwtErrorCode)
+			throws RuntimeException, IOException, JSONException {
+		JSONObject responseJson = new JSONObject();
+		responseJson.put("message", jwtErrorCode.getMessage());
+		responseJson.put("status", jwtErrorCode.getStatus());
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		response.getWriter().print(responseJson);
+	}
+	public static void responseAuthenticationError(HttpServletResponse response, String message,int status)
+			throws RuntimeException, IOException, JSONException {
+		JSONObject responseJson = new JSONObject();
+		responseJson.put("message", message);
+		responseJson.put("status", status);
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		response.getWriter().print(responseJson);
+	}
 }

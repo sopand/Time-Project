@@ -6,8 +6,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.time.entity.Member;
-import com.time.exception.CustomException;
-import com.time.exception.ErrorCode;
 import com.time.jwt.CustomUserDetails;
 import com.time.repository.MemberRepository;
 
@@ -25,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 		
 		// Member정보가 없다면 Error 발생
 		Member memberData = memberRepository.findByEmail(email)
-		        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+		        .orElseThrow(() ->  new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 		
 		
 		// Member 정보가 있다면 해당 member 정보로 로그인한 사용자의 권한 , 아이디 , 패스워드등을 매칭

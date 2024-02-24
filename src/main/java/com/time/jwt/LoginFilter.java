@@ -3,9 +3,10 @@ package com.time.jwt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.time.util.CommonUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,25 +44,25 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-		ReqLoginData loginData=null;
-		
-		if(request.getContentType().equals(CONTENT_TYPE)) {  // 시큐리티는 form아니면 obtain에서 못가져온다..
+		ReqLoginData loginData = null;
+
+		if (request.getContentType().equals(CONTENT_TYPE)) { // 시큐리티는 form아니면 obtain에서 못가져온다..
 			ObjectMapper objectMapper = new ObjectMapper();
 			try (InputStream inputStream = request.getInputStream()) {
 				loginData = objectMapper.readValue(inputStream, ReqLoginData.class);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else {
-			//클라이언트 요청에서 username, password 추출
+		} else {
+			// 클라이언트 요청에서 username, password 추출
 			loginData.setUsername(obtainUsername(request));
 			loginData.setPassword(obtainPassword(request));
 		}
-		
-		
+
 		log.info("로그인 사용자 이메일 : {} 패스워드 : {}", loginData.getUsername(), loginData.getPassword());
 		// 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야한다.
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginData.getUsername(), loginData.getPassword(), null);
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginData.getUsername(),
+				loginData.getPassword(), null);
 
 		// token에 담은 검증을 위한 AuthenticationManager로 전달
 		return authenticationManager.authenticate(authToken);
@@ -78,23 +80,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		GrantedAuthority auth = iterator.next();
 
 		String role = auth.getAuthority();
-		
+
 		String accessToken = jwtUtil.createJwt(username, role, 18000L);
 		String refreshToken = jwtUtil.createRefresh(); // 리프레시 토큰 생성 메소드를 호출하거나, 다른 방식으로 리프레시 토큰을 생성합니다.
 
-		TokenInfo tokenResponse=TokenInfo.builder()
-				.accessToken(accessToken)
-				.refreshToken(refreshToken)
-				.grantType("Bearer")
-				.build();
+		TokenInfo tokenResponse = TokenInfo.builder().accessToken(accessToken).refreshToken(refreshToken)
+				.grantType("Bearer").build();
 		// JSON 형태로 변환하여 응답에 쓰기
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    String jsonResponse = objectMapper.writeValueAsString(tokenResponse);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonResponse = objectMapper.writeValueAsString(tokenResponse);
 
-	    // JSON 응답을 클라이언트에게 전송
-	    response.setContentType("application/json");
-	    response.setCharacterEncoding("UTF-8");
-	    response.getWriter().write(jsonResponse);
+		// JSON 응답을 클라이언트에게 전송
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(jsonResponse);
 
 		log.info("로그인 성공하였습니다");
 	}
@@ -103,10 +102,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		response.setStatus(401);
-		response.setContentType("application/json");
-	    response.setCharacterEncoding("UTF-8");
-	    response.getWriter().write("로그인에 실패하였습니다.");
+		try {
+			CommonUtils.responseAuthenticationError(response, failed.getMessage(), 401);
+		} catch (RuntimeException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
 
 	}
 
