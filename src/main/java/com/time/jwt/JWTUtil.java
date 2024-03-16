@@ -51,10 +51,10 @@ public class JWTUtil {
 	
 	
 	// 리프레쉬 토근을 생성하는 메서드
-	public String createRefresh() {
+	public String createRefresh(Long expiredMs) {
 		return Jwts.builder()
 				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis()+8640000L))
+				.expiration(new Date(System.currentTimeMillis()+expiredMs))
 				.signWith(secretKey)
 				.compact();
 	}

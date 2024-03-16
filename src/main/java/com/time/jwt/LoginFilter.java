@@ -5,8 +5,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +32,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private static final String CONTENT_TYPE = "application/json"; // JSON 타입의 요청일 경우
 	private final JWTUtil jwtUtil;
+	@Value("${jwt.expiration}")
+	public long tokenExpiration;
+	@Value("${jwt.refresh-token.expration}")
+	public long refreshTokenExpiration;
+
 
 	@Getter
 	@Setter
@@ -81,8 +85,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String role = auth.getAuthority();
 
-		String accessToken = jwtUtil.createJwt(username, role, 18000L);
-		String refreshToken = jwtUtil.createRefresh(); // 리프레시 토큰 생성 메소드를 호출하거나, 다른 방식으로 리프레시 토큰을 생성합니다.
+		String accessToken = jwtUtil.createJwt(username, role, tokenExpiration);
+		String refreshToken = jwtUtil.createRefresh(refreshTokenExpiration); // 리프레시 토큰 생성 메소드를 호출하거나, 다른 방식으로 리프레시 토큰을 생성합니다.
 
 		TokenInfo tokenResponse = TokenInfo.builder().accessToken(accessToken).refreshToken(refreshToken)
 				.grantType("Bearer").build();
@@ -104,7 +108,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			AuthenticationException failed) throws IOException, ServletException {
 		try {
 			CommonUtils.responseAuthenticationError(response, failed.getMessage(), 401);
-		} catch (RuntimeException | IOException | JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
