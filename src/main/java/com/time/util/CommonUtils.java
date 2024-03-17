@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONObject;
 
 import com.time.enums.TimeStampType;
 import com.time.exception.CustomException;
